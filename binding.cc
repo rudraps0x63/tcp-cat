@@ -28,6 +28,9 @@ onCloseCb(uv_handle_t *handle)
   err = js_resolve_deferred(env, ctx->closePromise, result);
   assert(err == 0);
 
+  delete ctx;
+  ctx = nullptr;
+
   err = js_close_handle_scope(env, scope);
   assert(err == 0);
 }

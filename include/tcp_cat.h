@@ -28,5 +28,7 @@ struct TcpCat {
 
   virtual ~TcpCat() {
     delete socket;
+    delete conn;
+    delete writeConn;
   }
 };
