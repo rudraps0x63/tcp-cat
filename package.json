@@ -1,8 +1,8 @@
 {
-  "name": "bare-addon-exercise",
+  "name": "tcp-cat",
   "version": "1.0.0",
   "description": "",
-  "license": "ISC",
+  "license": "MIT",
   "author": "",
   "type": "commonjs",
   "main": "index.js",
