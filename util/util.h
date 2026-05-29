@@ -41,17 +41,6 @@ collectString(js_env_t *env, js_value_t *value)
   return (char *)str;
 }
 
-static void *
-getContextObject(js_env_t *env, js_value_t *value)
-{
-  int err;
-  void *ctx;
-
-  err = js_get_value_external(env, value, &ctx);
-
-  return ctx;
-}
-
 static js_value_t *
 getJsError(js_env_t *env, const char *code = nullptr, const char *message = nullptr)
 {
