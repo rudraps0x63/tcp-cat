@@ -88,10 +88,10 @@ onReadCb(uv_stream_t *stream, ssize_t nread, const uv_buf_t *buf)
     err = js_get_null(env, &args[1]);
     assert(err == 0);
   } else if (nread < 0) {
-    js_value_t *error = Util::getJsError(env, "ERR:onReadCb", "Callback for read from stream failed.");
-
     err = js_get_null(env, &args[1]);
     assert(err == 0);
+
+    js_value_t *error = Util::getJsError(env, "ERR:onReadCb", "Callback for read from stream failed.");
   } else {
     void *data;
     err = js_create_arraybuffer(env, nread, &data, &args[1]);
@@ -105,7 +105,8 @@ onReadCb(uv_stream_t *stream, ssize_t nread, const uv_buf_t *buf)
   err = js_get_reference_value(env, ctx->onReadCb, &onReadCb);
   assert(err == 0);
 
-  js_call_function(env, receiver, onReadCb, 2, args, nullptr);
+  err = js_call_function(env, receiver, onReadCb, 2, args, nullptr);
+  assert(err == 0);
 
   err = js_close_handle_scope(env, scope);
   assert(err == 0);
@@ -160,6 +161,7 @@ onWriteCb(uv_write_t *req, int status)
     auto error = Util::getJsError(env, "ERR:onWriteCb", "Callback for write to stream failed.");
 
     err = js_reject_deferred(env, ctx->writePromise, error);
+    assert(err == 0);
 
     err = js_close_handle_scope(env, scope);
     assert(err == 0);
@@ -193,8 +195,11 @@ tcpCatMakeRequest(js_env_t *env, js_callback_info_t *info)
   js_value_t *promise;
   js_handle_scope_t *scope;
 
-  js_open_handle_scope(env, &scope);
-  js_get_value_external(env, args[0], (void **)&ctx);
+  err = js_open_handle_scope(env, &scope);
+  assert(err == 0);
+
+  err = js_get_value_external(env, args[0], (void **)&ctx);
+  assert(err == 0);
 
   request = Util::collectString(env, args[1]);
 
@@ -206,13 +211,17 @@ tcpCatMakeRequest(js_env_t *env, js_callback_info_t *info)
   if (uv_write(ctx->writeConn, (uv_stream_t *)ctx->socket, &buf, 1, onWriteCb) < 0) {
     js_value_t *result;
 
-    js_get_undefined(env, &result);
-    js_throw_error(env, "ERR:uv_write", "Failed to write to remote host.");
+    err = js_get_undefined(env, &result);
+    assert(err == 0);
+
+    err = js_throw_error(env, "ERR:uv_write", "Failed to write to remote host.");
+    assert(err == 0);
 
     return result;
   }
 
-  js_close_handle_scope(env, scope);
+  err = js_close_handle_scope(env, scope);
+  assert(err == 0);
 
   return promise;
 }
@@ -278,8 +287,11 @@ tcpCatConnect(js_env_t *env, js_callback_info_t *info)
   if (uv_tcp_connect(ctx->conn, ctx->socket, &ctx->addr, onConnectCb) < 0) {
     js_value_t *result;
 
-    js_get_undefined(env, &result);
-    js_throw_error(env, "ERR:uv_tcp_connect", "Failed to connect to remote host.");
+    err = js_get_undefined(env, &result);
+    assert(err == 0);
+
+    err = js_throw_error(env, "ERR:uv_tcp_connect", "Failed to connect to remote host.");
+    assert(err == 0);
 
     return result;
   }
@@ -300,10 +312,11 @@ tcpCatNew(js_env_t *env, js_callback_info_t *info) {
   TcpCat *ctx = nullptr;
   js_value_t *result;
 
-  js_get_env_loop(env, &loop);
+  err = js_get_env_loop(env, &loop);
+  assert(err == 0);
+
   ctx = new TcpCat{ loop };
   ctx->env = env;
-
   {
     auto ip = Util::collectString(env, args[0]);
     uint family;
@@ -326,7 +339,8 @@ tcpCatNew(js_env_t *env, js_callback_info_t *info) {
     std::cout << ip << ", " << family << ", " << port << '\n';
   }
 
-  js_create_external(env, (void *)ctx, nullptr, nullptr, &result);
+  err = js_create_external(env, (void *)ctx, nullptr, nullptr, &result);
+  assert(err == 0);
 
   return result;
 }
