@@ -236,8 +236,6 @@ onConnectCb(uv_connect_t *req, int status)
   js_handle_scope_t *scope;
   js_value_t *result;
 
-  std::cout << "Connection established!\n";
-
   err = js_open_handle_scope(env, &scope);
   assert(err == 0);
 
@@ -322,8 +320,6 @@ tcpCatNew(js_env_t *env, js_callback_info_t *info) {
     uint family;
     uint port;
 
-    std::cout << ip << ", " << family << ", " << port << '\n';
-
     err = js_get_value_uint32(env, args[1], &family);
     assert(err == 0);
 
@@ -335,8 +331,6 @@ tcpCatNew(js_env_t *env, js_callback_info_t *info) {
     else
       err = uv_ip6_addr(ip.c_str(), port, (sockaddr_in6 *)&ctx->addr);
     assert(err >= 0);
-
-    std::cout << ip << ", " << family << ", " << port << '\n';
   }
 
   err = js_create_external(env, (void *)ctx, nullptr, nullptr, &result);
